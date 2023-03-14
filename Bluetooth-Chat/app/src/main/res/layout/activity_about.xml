@@ -30,9 +30,29 @@
                 android:layout_marginTop="50dp"
                 android:padding="24dp"
                 android:rotationX="0"
-                android:text="one device is sender and one device is reciever, Connect the devices using bluetooth and transfer money even in offline mode. This project is made for mini project "
+                android:text=" Your current wallet balance is :  "
                 android:textColor="#ffffff"
                 android:textSize="34sp" />
+            <TextView
+                android:id="@+id/bal_var"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:padding="24dp"
+                android:rotationX="0"
+                android:text=""
+                android:textColor="#ffffff"
+                android:textSize="34sp" />
+            <Button
+                android:layout_width="match_parent"
+                android:text="refresh amount data"
+                android:layout_margin="20dp"
+                android:textColor="@color/white"
+                android:layout_height="90dp"
+                android:onClick="ReadBtn"
+                android:textSize="20dp"
+
+                />
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
