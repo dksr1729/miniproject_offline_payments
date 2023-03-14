@@ -28,7 +28,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="50dp"
-                android:padding="25dp"
+                android:padding="24dp"
                 android:rotationX="0"
                 android:text="one device is sender and one device is reciever, Connect the devices using bluetooth and transfer money even in offline mode. This project is made for mini project "
                 android:textColor="#ffffff"
