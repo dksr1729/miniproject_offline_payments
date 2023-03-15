@@ -41,13 +41,22 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+
+import com.matrix_maeny.bluetoothchat.AboutActivity;
+import com.matrix_maeny.bluetoothchat.AboutActivity.*;
+
+import org.w3c.dom.Text;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -99,6 +108,9 @@ public class MainActivity extends AppCompatActivity {
     private static final int MESSAGE_WRITE = 2;
     private static final int MESSAGE_TOAST = 3;
 
+    TextView textmsg;
+    static final int READ_BLOCK_SIZE = 100;
+
     @RequiresApi(api = Build.VERSION_CODES.S)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,13 +120,10 @@ public class MainActivity extends AppCompatActivity {
         name = getIntent().getStringExtra("name");
         Objects.requireNonNull(getSupportActionBar()).setTitle(name);
 
-
-        // taking permission to access location ...
-
-
         initializeVariables();
         setListeners();
 
+        TextView textmsg = (TextView)findViewById(R.id.textView7);
 
         // checking whether the bluetooth is available or not in the device
         if (checkBluetoothCompatibility()) {
@@ -147,6 +156,27 @@ public class MainActivity extends AppCompatActivity {
             startServerSocket();
         } else {
             startDiscoveryOfDevices();
+        }
+
+
+    }
+
+    // write text to file
+    public void WriteBtn(String v) {
+
+        // add-write text into file
+        try {
+            FileOutputStream fileout=openFileOutput("mytextfile.txt", MODE_PRIVATE);
+            OutputStreamWriter outputWriter=new OutputStreamWriter(fileout);
+            outputWriter.write(v);
+            outputWriter.close();
+
+            //display file saved message
+            Toast.makeText(getBaseContext(), "Updated wallet successfully! with amount " + v,
+                    Toast.LENGTH_SHORT).show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
 
@@ -847,11 +877,29 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public boolean isNumber(String strNum){
+        if (strNum == null) {
+            return false;
+        }
+        try {
+            int d = Integer.parseInt(strNum);
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+        return true;
+    }
+    // button function to send message and update wallet
     public void sendMsgToUserBtn(View view) {
         // write data......
         String msgTxt;
+
         try {
             msgTxt = enteredMsg.getText().toString();
+            WriteBtn(msgTxt);
+
+            Toast.makeText(getBaseContext(), "message sent ",
+                    Toast.LENGTH_SHORT).show();
+
         } catch (Exception e) {
             e.printStackTrace();
             sendMessageToUi("Please enter message");
