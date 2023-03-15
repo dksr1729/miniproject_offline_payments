@@ -5,8 +5,12 @@ import android.app.Activity;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
@@ -21,7 +25,7 @@ public class AboutActivity extends Activity {
         textmsg = (TextView) findViewById(R.id.textView7);
         String textdata =textmsg.getText().toString();
         ReadBtn(textmsg);
-    }
+        }
 
     // write text to file
     public void WriteBtn(String v) {
@@ -43,12 +47,44 @@ public class AboutActivity extends Activity {
     }
 
     // Read text from file
-    public void ReadBtn(View v) {
+    public void ReadBtn(View v)
+    {
+
+        File f = new File("mytextfile.txt");
+        if(f.exists() && !f.isDirectory()) {
+            int temp_vars_a = 0;
+        }
+        else {
+            try {
+                if(f.createNewFile()){
+                    try {
+                        FileOutputStream fileout = openFileOutput("mytextfile.txt", MODE_PRIVATE);
+                        OutputStreamWriter outputWriter = new OutputStreamWriter(fileout);
+                        outputWriter.write("5578");
+                        outputWriter.close();
+                    }
+                    catch(Exception e){
+                        int temp_vars_b = 0;
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         //reading text from file
         try {
+
+            File ff = new File("mytextfile.txt");
+            if(ff.exists() && !ff.isDirectory()) {
+                int temp_vars_a = 0;
+            }
+            else{
+                WriteBtn("5577");
+            }
+
+
             FileInputStream fileIn=openFileInput("mytextfile.txt");
             InputStreamReader InputRead= new InputStreamReader(fileIn);
-
             char[] inputBuffer= new char[READ_BLOCK_SIZE];
             String s="";
             int charRead;

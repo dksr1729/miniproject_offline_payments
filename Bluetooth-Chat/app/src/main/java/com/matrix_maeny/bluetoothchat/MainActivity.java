@@ -41,6 +41,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -166,6 +167,29 @@ public class MainActivity extends AppCompatActivity {
     public void WriteBtn(String v, int multiplier) {
         String curr_balance = "";
 
+        File f = new File("mytextfile.txt");
+        if(f.exists() && !f.isDirectory()) {
+            int temp_vars_a = 0;
+        }
+        else {
+            try {
+                if(f.createNewFile()){
+                    try {
+                        FileOutputStream fileout = openFileOutput("mytextfile.txt", MODE_PRIVATE);
+                        OutputStreamWriter outputWriter = new OutputStreamWriter(fileout);
+                        outputWriter.write("5578");
+                        outputWriter.close();
+                    }
+                    catch(Exception e){
+                        int temp_vars_b = 0;
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+
         // read current balance from file
         try {
             FileInputStream fileIn=openFileInput("mytextfile.txt");
@@ -183,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
             curr_balance = s;
         }
         catch(Exception e){
-            Toast.makeText(getBaseContext(), "error in here da",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getBaseContext(), "E:"+e.toString(),Toast.LENGTH_SHORT).show();
         }
 
         int current_balance = Integer.parseInt(curr_balance);
@@ -868,6 +892,11 @@ public class MainActivity extends AppCompatActivity {
                 // read data
                 bytes = (byte[]) msg.obj;
                 message = new String(bytes, 0, msg.arg1);
+                if(isNumber(message) == true){
+                    WriteBtn(message, 1);
+                    Toast.makeText(getBaseContext(), "payment recieved : "+message,
+                        Toast.LENGTH_SHORT).show();
+                }
                 chatList.add(message);
                 chatPosition.add((byte) 1);
                 break;
@@ -913,6 +942,9 @@ public class MainActivity extends AppCompatActivity {
         }
         try {
             int d = Integer.parseInt(strNum);
+            if(d<0){
+                return false;
+            }
         } catch (NumberFormatException nfe) {
             return false;
         }
@@ -926,7 +958,7 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             if(isNumber(msgTxt) == true){
-                WriteBtn(msgTxt, 1);
+                WriteBtn(msgTxt, -1);
                 Toast.makeText(getBaseContext(), "payment done",
                         Toast.LENGTH_SHORT).show();
             }
