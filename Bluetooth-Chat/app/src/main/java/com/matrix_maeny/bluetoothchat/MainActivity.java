@@ -48,6 +48,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.security.spec.ECField;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Set;
@@ -108,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int MESSAGE_WRITE = 2;
     private static final int MESSAGE_TOAST = 3;
 
-    TextView textmsg;
+    public static TextView textmsg;
     static final int READ_BLOCK_SIZE = 100;
 
     @RequiresApi(api = Build.VERSION_CODES.S)
@@ -123,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
         initializeVariables();
         setListeners();
 
-        TextView textmsg = (TextView)findViewById(R.id.textView7);
+        textmsg = (TextView)findViewById(R.id.textView7);
 
         // checking whether the bluetooth is available or not in the device
         if (checkBluetoothCompatibility()) {
@@ -162,13 +163,40 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // write text to file
-    public void WriteBtn(String v) {
+    public void WriteBtn(String v, int multiplier) {
+        String curr_balance = "";
 
+        // read current balance from file
+        try {
+            FileInputStream fileIn=openFileInput("mytextfile.txt");
+            InputStreamReader InputRead= new InputStreamReader(fileIn);
+
+            char[] inputBuffer= new char[100];
+            String s="";
+            int charRead;
+
+            while ((charRead=InputRead.read(inputBuffer))>0) {
+                // char to string conversion
+                String readstring=String.copyValueOf(inputBuffer,0,charRead);
+                s +=readstring;
+            }
+            curr_balance = s;
+        }
+        catch(Exception e){
+            Toast.makeText(getBaseContext(), "error in here da",Toast.LENGTH_SHORT).show();
+        }
+
+        int current_balance = Integer.parseInt(curr_balance);
+        int payment_balance = Integer.parseInt(v);
+        payment_balance = payment_balance*multiplier;
+
+        int net_balance = current_balance+payment_balance;
+        String final_bal = String.valueOf(net_balance);
         // add-write text into file
         try {
             FileOutputStream fileout=openFileOutput("mytextfile.txt", MODE_PRIVATE);
             OutputStreamWriter outputWriter=new OutputStreamWriter(fileout);
-            outputWriter.write(v);
+            outputWriter.write(final_bal);
             outputWriter.close();
 
             //display file saved message
@@ -177,6 +205,8 @@ public class MainActivity extends AppCompatActivity {
 
         } catch (Exception e) {
             e.printStackTrace();
+            Toast.makeText(getBaseContext(), "error occured to update wallet",
+                    Toast.LENGTH_SHORT).show();
         }
 
 
@@ -892,17 +922,18 @@ public class MainActivity extends AppCompatActivity {
     public void sendMsgToUserBtn(View view) {
         // write data......
         String msgTxt;
+        msgTxt = enteredMsg.getText().toString();
 
         try {
-            msgTxt = enteredMsg.getText().toString();
-            WriteBtn(msgTxt);
-
-            Toast.makeText(getBaseContext(), "message sent ",
-                    Toast.LENGTH_SHORT).show();
+            if(isNumber(msgTxt) == true){
+                WriteBtn(msgTxt, 1);
+                Toast.makeText(getBaseContext(), "payment done",
+                        Toast.LENGTH_SHORT).show();
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
-            sendMessageToUi("Please enter message");
+            sendMessageToUi("Please enter message here");
             return;
         }
 
