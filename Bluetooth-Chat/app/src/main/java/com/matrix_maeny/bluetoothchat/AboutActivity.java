@@ -50,27 +50,6 @@ public class AboutActivity extends Activity {
     public void ReadBtn(View v)
     {
 
-        File f = new File("mytextfile.txt");
-        if(f.exists() && !f.isDirectory()) {
-            int temp_vars_a = 0;
-        }
-        else {
-            try {
-                if(f.createNewFile()){
-                    try {
-                        FileOutputStream fileout = openFileOutput("mytextfile.txt", MODE_PRIVATE);
-                        OutputStreamWriter outputWriter = new OutputStreamWriter(fileout);
-                        outputWriter.write("5578");
-                        outputWriter.close();
-                    }
-                    catch(Exception e){
-                        int temp_vars_b = 0;
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
         //reading text from file
         try {
 
@@ -79,7 +58,7 @@ public class AboutActivity extends Activity {
                 int temp_vars_a = 0;
             }
             else{
-                WriteBtn("5577");
+                WriteBtn("1001");
             }
 
 

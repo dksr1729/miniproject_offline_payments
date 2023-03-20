@@ -167,29 +167,6 @@ public class MainActivity extends AppCompatActivity {
     public void WriteBtn(String v, int multiplier) {
         String curr_balance = "";
 
-        File f = new File("mytextfile.txt");
-        if(f.exists() && !f.isDirectory()) {
-            int temp_vars_a = 0;
-        }
-        else {
-            try {
-                if(f.createNewFile()){
-                    try {
-                        FileOutputStream fileout = openFileOutput("mytextfile.txt", MODE_PRIVATE);
-                        OutputStreamWriter outputWriter = new OutputStreamWriter(fileout);
-                        outputWriter.write("5578");
-                        outputWriter.close();
-                    }
-                    catch(Exception e){
-                        int temp_vars_b = 0;
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-
         // read current balance from file
         try {
             FileInputStream fileIn=openFileInput("mytextfile.txt");
@@ -218,14 +195,16 @@ public class MainActivity extends AppCompatActivity {
         String final_bal = String.valueOf(net_balance);
         // add-write text into file
         try {
-            FileOutputStream fileout=openFileOutput("mytextfile.txt", MODE_PRIVATE);
-            OutputStreamWriter outputWriter=new OutputStreamWriter(fileout);
-            outputWriter.write(final_bal);
-            outputWriter.close();
+
 
             //display file saved message
             Toast.makeText(getBaseContext(), "Updated wallet successfully! with amount " + v,
                     Toast.LENGTH_SHORT).show();
+
+            FileOutputStream fileout=openFileOutput("mytextfile.txt", MODE_PRIVATE);
+            OutputStreamWriter outputWriter=new OutputStreamWriter(fileout);
+            outputWriter.write(final_bal);
+            outputWriter.close();
 
         } catch (Exception e) {
             e.printStackTrace();
