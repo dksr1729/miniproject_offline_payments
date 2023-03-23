@@ -159,20 +159,34 @@ public class MainActivity extends AppCompatActivity {
         } else {
             startDiscoveryOfDevices();
         }
-
-
     }
 
     // write text to file
-    public void WriteBtn(String v, int multiplier) {
-        String curr_balance = "";
+    public void WriteBtn(View v, int multiplier) {
+        // add-write text into file
+        try {
+            FileOutputStream fileout=openFileOutput("mytextfile.txt", MODE_PRIVATE);
+            OutputStreamWriter outputWriter=new OutputStreamWriter(fileout);
+            outputWriter.write(textmsg.getText().toString());
+            outputWriter.close();
 
-        // read current balance from file
+            //display file saved message
+            Toast.makeText(getBaseContext(), "File saved successfully!",
+                    Toast.LENGTH_SHORT).show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Read text from file
+    public void ReadBtn(View v) {
+        //reading text from file
         try {
             FileInputStream fileIn=openFileInput("mytextfile.txt");
             InputStreamReader InputRead= new InputStreamReader(fileIn);
 
-            char[] inputBuffer= new char[100];
+            char[] inputBuffer= new char[READ_BLOCK_SIZE];
             String s="";
             int charRead;
 
@@ -181,40 +195,16 @@ public class MainActivity extends AppCompatActivity {
                 String readstring=String.copyValueOf(inputBuffer,0,charRead);
                 s +=readstring;
             }
-            curr_balance = s;
-        }
-        catch(Exception e){
-            Toast.makeText(getBaseContext(), "E:"+e.toString(),Toast.LENGTH_SHORT).show();
-        }
-
-        int current_balance = Integer.parseInt(curr_balance);
-        int payment_balance = Integer.parseInt(v);
-        payment_balance = payment_balance*multiplier;
-
-        int net_balance = current_balance+payment_balance;
-        String final_bal = String.valueOf(net_balance);
-        // add-write text into file
-        try {
-
+            InputRead.close();
+            textmsg.setText(s);
 
             //display file saved message
-            Toast.makeText(getBaseContext(), "Updated wallet successfully! with amount " + v,
+            Toast.makeText(getBaseContext(), "Read Balance successfully!",
                     Toast.LENGTH_SHORT).show();
-
-            FileOutputStream fileout=openFileOutput("mytextfile.txt", MODE_PRIVATE);
-            OutputStreamWriter outputWriter=new OutputStreamWriter(fileout);
-            outputWriter.write(final_bal);
-            outputWriter.close();
-
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(getBaseContext(), "error occured to update wallet",
-                    Toast.LENGTH_SHORT).show();
         }
-
-
     }
-
 
     public void enableDiscoverability(View view) {
         discoveryIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
@@ -872,7 +862,7 @@ public class MainActivity extends AppCompatActivity {
                 bytes = (byte[]) msg.obj;
                 message = new String(bytes, 0, msg.arg1);
                 if(isNumber(message) == true){
-                    WriteBtn(message, 1);
+//                    WriteBtn(message,1);
                     Toast.makeText(getBaseContext(), "payment recieved : "+message,
                         Toast.LENGTH_SHORT).show();
                 }
@@ -937,7 +927,7 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             if(isNumber(msgTxt) == true){
-                WriteBtn(msgTxt, -1);
+//                WriteBtn(msgTxt, -1);
                 Toast.makeText(getBaseContext(), "payment done",
                         Toast.LENGTH_SHORT).show();
             }
