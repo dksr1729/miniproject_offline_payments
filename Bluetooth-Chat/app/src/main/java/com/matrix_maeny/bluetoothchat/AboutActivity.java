@@ -31,6 +31,7 @@ public class AboutActivity extends Activity {
     public void WriteBtn(String v) {
         // add-write text into file
         try {
+
             FileOutputStream fileout=openFileOutput("mytextfile.txt", MODE_PRIVATE);
             OutputStreamWriter outputWriter=new OutputStreamWriter(fileout);
             outputWriter.write(v);
