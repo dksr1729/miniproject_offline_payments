@@ -64,7 +64,9 @@ public class AboutActivity extends Activity {
             InputRead.close();
             textmsg.setText(s);
 
-
+            //display file saved message
+            Toast.makeText(getBaseContext(), "Read Balance successfully!",
+                    Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             e.printStackTrace();
         }
