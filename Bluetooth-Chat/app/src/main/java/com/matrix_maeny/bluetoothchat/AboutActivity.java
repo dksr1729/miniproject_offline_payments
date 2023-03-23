@@ -22,49 +22,36 @@ public class AboutActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
-        textmsg = (TextView) findViewById(R.id.textView7);
-        String textdata =textmsg.getText().toString();
+        textmsg = (TextView)findViewById(R.id.textView7);
+//        String textdata=textmsg.getText().toString();
         ReadBtn(textmsg);
         }
 
     // write text to file
-    public void WriteBtn(String v) {
+    public void WriteBtn(View v) {
         // add-write text into file
         try {
-
             FileOutputStream fileout=openFileOutput("mytextfile.txt", MODE_PRIVATE);
             OutputStreamWriter outputWriter=new OutputStreamWriter(fileout);
-            outputWriter.write(v);
+            outputWriter.write(textmsg.getText().toString());
             outputWriter.close();
 
             //display file saved message
-            Toast.makeText(getBaseContext(), "Updated wallet successfully!",
+            Toast.makeText(getBaseContext(), "File saved successfully!",
                     Toast.LENGTH_SHORT).show();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-        textmsg.setText(v.toString());
     }
 
     // Read text from file
-    public void ReadBtn(View v)
-    {
-
+    public void ReadBtn(View v) {
         //reading text from file
         try {
-
-            File ff = new File("mytextfile.txt");
-            if(ff.exists() && !ff.isDirectory()) {
-                int temp_vars_a = 0;
-            }
-            else{
-                WriteBtn("1001");
-            }
-
-
             FileInputStream fileIn=openFileInput("mytextfile.txt");
             InputStreamReader InputRead= new InputStreamReader(fileIn);
+
             char[] inputBuffer= new char[READ_BLOCK_SIZE];
             String s="";
             int charRead;
@@ -76,13 +63,10 @@ public class AboutActivity extends Activity {
             }
             InputRead.close();
             textmsg.setText(s);
-            WriteBtn(s);
+
 
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(getBaseContext(), "unable to fetch balance" ,
-                    Toast.LENGTH_SHORT).show();
         }
-
     }
 }
