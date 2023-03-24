@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int MESSAGE_WRITE = 2;
     private static final int MESSAGE_TOAST = 3;
 
-    public static TextView textmsg;
+    TextView textmsg;
     static final int READ_BLOCK_SIZE = 100;
 
     @RequiresApi(api = Build.VERSION_CODES.S)
@@ -126,6 +126,14 @@ public class MainActivity extends AppCompatActivity {
         setListeners();
 
         textmsg = (TextView)findViewById(R.id.textView7);
+
+        // check whether the internal storage file exists or not, else create new one
+//        try {
+//            new FileOutputStream("mytextfile.txt", true).close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
 
         // checking whether the bluetooth is available or not in the device
         if (checkBluetoothCompatibility()) {
@@ -162,12 +170,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // write text to file
-    public void WriteBtn(View v, int multiplier) {
+    public void WriteBtn(View v,String message) {
         // add-write text into file
         try {
+//            textmsg.setText("12345");
             FileOutputStream fileout=openFileOutput("mytextfile.txt", MODE_PRIVATE);
             OutputStreamWriter outputWriter=new OutputStreamWriter(fileout);
-            outputWriter.write(textmsg.getText().toString());
+            outputWriter.write(message); //textmsg.getText().toString()
             outputWriter.close();
 
             //display file saved message
@@ -861,10 +870,34 @@ public class MainActivity extends AppCompatActivity {
                 // read data
                 bytes = (byte[]) msg.obj;
                 message = new String(bytes, 0, msg.arg1);
+
+                try{
                 if(isNumber(message) == true){
-//                    WriteBtn(message,1);
-                    Toast.makeText(getBaseContext(), "payment recieved : "+message,
-                        Toast.LENGTH_SHORT).show();
+
+                    FileInputStream fileIn=openFileInput("mytextfile.txt");
+                    InputStreamReader InputRead= new InputStreamReader(fileIn);
+
+                    char[] inputBuffer= new char[READ_BLOCK_SIZE];
+                    String s="";
+                    int charRead;
+
+                    while ((charRead=InputRead.read(inputBuffer))>0) {
+                        // char to string conversion
+                        String readstring=String.copyValueOf(inputBuffer,0,charRead);
+                        s +=readstring;
+                    }
+                    InputRead.close();
+
+
+
+                    int cb = Integer.parseInt(s);
+                    cb = cb + Integer.parseInt(message);
+                    WriteBtn(textmsg,String.valueOf(cb));
+                    Toast.makeText(getBaseContext(), "payment done",
+                            Toast.LENGTH_SHORT).show();
+                }}
+                catch (Exception e){
+                    int asd=123;
                 }
                 chatList.add(message);
                 chatPosition.add((byte) 1);
@@ -924,17 +957,36 @@ public class MainActivity extends AppCompatActivity {
         // write data......
         String msgTxt;
         msgTxt = enteredMsg.getText().toString();
-
         try {
             if(isNumber(msgTxt) == true){
-//                WriteBtn(msgTxt, -1);
+
+
+                FileInputStream fileIn=openFileInput("mytextfile.txt");
+                InputStreamReader InputRead= new InputStreamReader(fileIn);
+
+                char[] inputBuffer= new char[READ_BLOCK_SIZE];
+                String s="";
+                int charRead;
+
+                while ((charRead=InputRead.read(inputBuffer))>0) {
+                    // char to string conversion
+                    String readstring=String.copyValueOf(inputBuffer,0,charRead);
+                    s +=readstring;
+                }
+                InputRead.close();
+
+
+
+                int cb = Integer.parseInt(s);
+                cb = cb - Integer.parseInt(msgTxt);
+                WriteBtn(textmsg,String.valueOf(cb));
                 Toast.makeText(getBaseContext(), "payment done",
                         Toast.LENGTH_SHORT).show();
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            sendMessageToUi("Please enter message here");
+            sendMessageToUi(""+e);
             return;
         }
 

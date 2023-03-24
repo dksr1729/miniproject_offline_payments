@@ -37,7 +37,7 @@ public class AboutActivity extends Activity {
             outputWriter.close();
 
             //display file saved message
-            Toast.makeText(getBaseContext(), "File saved successfully!",
+            Toast.makeText(getBaseContext(), "updated balance successfully!",
                     Toast.LENGTH_SHORT).show();
 
         } catch (Exception e) {
@@ -49,6 +49,7 @@ public class AboutActivity extends Activity {
     public void ReadBtn(View v) {
         //reading text from file
         try {
+//            new FileOutputStream("mytextfile.txt", true).close();
             FileInputStream fileIn=openFileInput("mytextfile.txt");
             InputStreamReader InputRead= new InputStreamReader(fileIn);
 
@@ -68,7 +69,9 @@ public class AboutActivity extends Activity {
             Toast.makeText(getBaseContext(), "Read Balance successfully!",
                     Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
-            e.printStackTrace();
+            //display file saved message
+            Toast.makeText(getBaseContext(), "unable to read the file!",
+                    Toast.LENGTH_SHORT).show();
         }
     }
 }
