@@ -8,7 +8,11 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.WindowManager;
+import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Objects;
 
 @SuppressLint("CustomSplashScreen")
@@ -26,6 +30,7 @@ public class SplashScreenActivity extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.S)
             public void run(){
                 try{
+
                     sleep(2500);
                 }catch (Exception ignored){
 

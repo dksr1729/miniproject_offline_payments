@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -23,7 +24,7 @@ public class AboutActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
         textmsg = (TextView)findViewById(R.id.textView7);
-//        String textdata=textmsg.getText().toString();
+        Toast.makeText(getBaseContext(),"file already there", Toast.LENGTH_SHORT).show();
         ReadBtn(textmsg);
         }
 
@@ -37,7 +38,7 @@ public class AboutActivity extends Activity {
             outputWriter.close();
 
             //display file saved message
-            Toast.makeText(getBaseContext(), "File saved successfully!",
+            Toast.makeText(getBaseContext(), "updated balance successfully!",
                     Toast.LENGTH_SHORT).show();
 
         } catch (Exception e) {
@@ -49,6 +50,7 @@ public class AboutActivity extends Activity {
     public void ReadBtn(View v) {
         //reading text from file
         try {
+            FileOutputStream fileout=openFileOutput("mytextfile.txt", MODE_PRIVATE);
             FileInputStream fileIn=openFileInput("mytextfile.txt");
             InputStreamReader InputRead= new InputStreamReader(fileIn);
 
@@ -65,10 +67,12 @@ public class AboutActivity extends Activity {
             textmsg.setText(s);
 
             //display file saved message
-            Toast.makeText(getBaseContext(), "Read Balance successfully!",
+            Toast.makeText(getBaseContext(), "Read Balance successfully!" + s,
                     Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
-            e.printStackTrace();
+            //display file saved message
+            Toast.makeText(getBaseContext(), "file :"+e,
+                    Toast.LENGTH_SHORT).show();
         }
     }
 }
