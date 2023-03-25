@@ -899,6 +899,7 @@ public class MainActivity extends AppCompatActivity {
         msgTxt = enteredMsg.getText().toString();
         try {
             if(isNumber(msgTxt) == true){
+                //MyPref holds the amount - wallet details
                 SharedPreferences pref = getSharedPreferences("MyPref", 0); // 0 - for private mode
                 String amount = pref.getString("amount","");
                 int cb = Integer.parseInt(amount); //fetch current balance
