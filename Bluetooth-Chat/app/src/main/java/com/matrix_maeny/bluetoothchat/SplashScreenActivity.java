@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.WindowManager;
@@ -30,7 +31,13 @@ public class SplashScreenActivity extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.S)
             public void run(){
                 try{
-
+                    SharedPreferences pref = getSharedPreferences("MyPref", 0); // 0 - for private mode
+                    String amount = pref.getString("amount","");
+                    if(amount == "" || amount == null){
+                        SharedPreferences.Editor editor = pref.edit();
+                        editor.putString("amount","0000");
+                        editor.apply();
+                    }
                     sleep(2500);
                 }catch (Exception ignored){
 

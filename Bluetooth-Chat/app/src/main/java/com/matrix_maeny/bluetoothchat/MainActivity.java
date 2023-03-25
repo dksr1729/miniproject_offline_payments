@@ -10,6 +10,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Build;
@@ -17,9 +18,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.Gravity;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -41,7 +39,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -54,11 +51,6 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-
-import com.matrix_maeny.bluetoothchat.AboutActivity;
-import com.matrix_maeny.bluetoothchat.AboutActivity.*;
-
-import org.w3c.dom.Text;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -127,14 +119,6 @@ public class MainActivity extends AppCompatActivity {
 
         textmsg = (TextView)findViewById(R.id.textView7);
 
-        // check whether the internal storage file exists or not, else create new one
-//        try {
-//            new FileOutputStream("mytextfile.txt", true).close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
-
         // checking whether the bluetooth is available or not in the device
         if (checkBluetoothCompatibility()) {
             requestEnableBluetooth();
@@ -170,46 +154,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // write text to file
-    public void WriteBtn(View v,String message) {
+    public void WriteBtn(String message) {
         // add-write text into file
         try {
-//            textmsg.setText("12345");
-            FileOutputStream fileout=openFileOutput("mytextfile.txt", MODE_PRIVATE);
-            OutputStreamWriter outputWriter=new OutputStreamWriter(fileout);
-            outputWriter.write(message); //textmsg.getText().toString()
-            outputWriter.close();
-
+            SharedPreferences pref = getSharedPreferences("MyPref", 0); // 0 - for private mode
+            SharedPreferences.Editor editor = pref.edit();
+            editor.putString("amount",message);
+            editor.apply();
             //display file saved message
-            Toast.makeText(getBaseContext(), "File saved successfully!",
+            Toast.makeText(getBaseContext(), "wallet updated successfully!",
                     Toast.LENGTH_SHORT).show();
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    // Read text from file
-    public void ReadBtn(View v) {
-        //reading text from file
-        try {
-            FileInputStream fileIn=openFileInput("mytextfile.txt");
-            InputStreamReader InputRead= new InputStreamReader(fileIn);
-
-            char[] inputBuffer= new char[READ_BLOCK_SIZE];
-            String s="";
-            int charRead;
-
-            while ((charRead=InputRead.read(inputBuffer))>0) {
-                // char to string conversion
-                String readstring=String.copyValueOf(inputBuffer,0,charRead);
-                s +=readstring;
-            }
-            InputRead.close();
-            textmsg.setText(s);
-
-            //display file saved message
-            Toast.makeText(getBaseContext(), "Read Balance successfully!",
-                    Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -873,27 +828,12 @@ public class MainActivity extends AppCompatActivity {
 
                 try{
                 if(isNumber(message) == true){
-
-                    FileInputStream fileIn=openFileInput("mytextfile.txt");
-                    InputStreamReader InputRead= new InputStreamReader(fileIn);
-
-                    char[] inputBuffer= new char[READ_BLOCK_SIZE];
-                    String s="";
-                    int charRead;
-
-                    while ((charRead=InputRead.read(inputBuffer))>0) {
-                        // char to string conversion
-                        String readstring=String.copyValueOf(inputBuffer,0,charRead);
-                        s +=readstring;
-                    }
-                    InputRead.close();
-
-
-
-                    int cb = Integer.parseInt(s);
+                    SharedPreferences pref = getSharedPreferences("MyPref", 0); // 0 - for private mode
+                    String amount = pref.getString("amount","");
+                    int cb = Integer.parseInt(amount);
                     cb = cb + Integer.parseInt(message);
-                    WriteBtn(textmsg,String.valueOf(cb));
-                    Toast.makeText(getBaseContext(), "payment done",
+                    WriteBtn(String.valueOf(cb));
+                    Toast.makeText(getBaseContext(), "payment recieved",
                             Toast.LENGTH_SHORT).show();
                 }}
                 catch (Exception e){
@@ -959,27 +899,11 @@ public class MainActivity extends AppCompatActivity {
         msgTxt = enteredMsg.getText().toString();
         try {
             if(isNumber(msgTxt) == true){
-
-
-                FileInputStream fileIn=openFileInput("mytextfile.txt");
-                InputStreamReader InputRead= new InputStreamReader(fileIn);
-
-                char[] inputBuffer= new char[READ_BLOCK_SIZE];
-                String s="";
-                int charRead;
-
-                while ((charRead=InputRead.read(inputBuffer))>0) {
-                    // char to string conversion
-                    String readstring=String.copyValueOf(inputBuffer,0,charRead);
-                    s +=readstring;
-                }
-                InputRead.close();
-
-
-
-                int cb = Integer.parseInt(s);
+                SharedPreferences pref = getSharedPreferences("MyPref", 0); // 0 - for private mode
+                String amount = pref.getString("amount","");
+                int cb = Integer.parseInt(amount); //fetch current balance
                 cb = cb - Integer.parseInt(msgTxt);
-                WriteBtn(textmsg,String.valueOf(cb));
+                WriteBtn(String.valueOf(cb));
                 Toast.makeText(getBaseContext(), "payment done",
                         Toast.LENGTH_SHORT).show();
             }
@@ -992,7 +916,7 @@ public class MainActivity extends AppCompatActivity {
 
         msgTxt = msgTxt.trim();
         if (msgTxt.equals("")) {
-            sendMessageToUi("Please enter message");
+            sendMessageToUi("Please enter a message");
             return;
         }
 
