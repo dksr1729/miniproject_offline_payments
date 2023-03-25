@@ -28,30 +28,10 @@ public class AboutActivity extends Activity {
         ReadBtn();
         }
 
-    // write text to file
-    public void WriteBtn(View v) {
-        // add-write text into file
-        try {
-            FileOutputStream fileout=openFileOutput("mytextfile.txt", MODE_PRIVATE);
-            OutputStreamWriter outputWriter=new OutputStreamWriter(fileout);
-            outputWriter.write(textmsg.getText().toString());
-            outputWriter.close();
-
-            //display file saved message
-            Toast.makeText(getBaseContext(), "File saved successfully!",
-                    Toast.LENGTH_SHORT).show();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     // Read text from file
     public void ReadBtn() {
         //reading text from file
         try {
-            FileInputStream fileIn=openFileInput("mytextfile.txt");
-            InputStreamReader InputRead= new InputStreamReader(fileIn);
 
             SharedPreferences pref = getSharedPreferences("MyPref", 0); // 0 - for private mode
             String amount = pref.getString("amount","");
@@ -66,7 +46,9 @@ public class AboutActivity extends Activity {
             Toast.makeText(getBaseContext(), "Read Balance successfully!" + amount,
                     Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
-            e.printStackTrace();
+            //display file saved message
+            Toast.makeText(getBaseContext(), "file :"+e,
+                    Toast.LENGTH_SHORT).show();
         }
     }
 }
