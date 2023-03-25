@@ -119,6 +119,14 @@ public class MainActivity extends AppCompatActivity {
 
         textmsg = (TextView)findViewById(R.id.textView7);
 
+        // check whether the internal storage file exists or not, else create new one
+//        try {
+//            new FileOutputStream("mytextfile.txt", true).close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
+
         // checking whether the bluetooth is available or not in the device
         if (checkBluetoothCompatibility()) {
             requestEnableBluetooth();
@@ -154,13 +162,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // write text to file
-    public void WriteBtn(String message) {
+    public void WriteBtn(View v, int multiplier) {
         // add-write text into file
         try {
-            SharedPreferences pref = getSharedPreferences("MyPref", 0); // 0 - for private mode
-            SharedPreferences.Editor editor = pref.edit();
-            editor.putString("amount",message);
-            editor.apply();
+            FileOutputStream fileout=openFileOutput("mytextfile.txt", MODE_PRIVATE);
+            OutputStreamWriter outputWriter=new OutputStreamWriter(fileout);
+            outputWriter.write(textmsg.getText().toString());
+            outputWriter.close();
+
             //display file saved message
             Toast.makeText(getBaseContext(), "wallet updated successfully!",
                     Toast.LENGTH_SHORT).show();
@@ -828,16 +837,9 @@ public class MainActivity extends AppCompatActivity {
 
                 try{
                 if(isNumber(message) == true){
-                    SharedPreferences pref = getSharedPreferences("MyPref", 0); // 0 - for private mode
-                    String amount = pref.getString("amount","");
-                    int cb = Integer.parseInt(amount);
-                    cb = cb + Integer.parseInt(message);
-                    WriteBtn(String.valueOf(cb));
-                    Toast.makeText(getBaseContext(), "payment recieved",
-                            Toast.LENGTH_SHORT).show();
-                }}
-                catch (Exception e){
-                    int asd=123;
+//                    WriteBtn(message,1);
+                    Toast.makeText(getBaseContext(), "payment recieved : "+message,
+                        Toast.LENGTH_SHORT).show();
                 }
                 chatList.add(message);
                 chatPosition.add((byte) 1);
@@ -899,11 +901,7 @@ public class MainActivity extends AppCompatActivity {
         msgTxt = enteredMsg.getText().toString();
         try {
             if(isNumber(msgTxt) == true){
-                SharedPreferences pref = getSharedPreferences("MyPref", 0); // 0 - for private mode
-                String amount = pref.getString("amount","");
-                int cb = Integer.parseInt(amount); //fetch current balance
-                cb = cb - Integer.parseInt(msgTxt);
-                WriteBtn(String.valueOf(cb));
+//                WriteBtn(msgTxt, -1);
                 Toast.makeText(getBaseContext(), "payment done",
                         Toast.LENGTH_SHORT).show();
             }
