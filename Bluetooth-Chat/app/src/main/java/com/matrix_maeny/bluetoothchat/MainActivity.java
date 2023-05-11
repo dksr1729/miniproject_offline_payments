@@ -47,7 +47,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.security.spec.ECField;
+import java.sql.Time;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -80,6 +83,8 @@ public class MainActivity extends AppCompatActivity {
     ListAdapter listAdapter = null;
     private BluetoothAdapter bluetoothAdapter = null;
 
+    int trflag=0;
+    String prev_am="0";
 
     ClientSocket clientSocket = null;
     ServerSocket serverSocket = null;
@@ -148,6 +153,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             startServerSocket();
+
         } else {
             startDiscoveryOfDevices();
         }
@@ -162,8 +168,8 @@ public class MainActivity extends AppCompatActivity {
             editor.putString("amount",message);
             editor.apply();
             //display file saved message
-            Toast.makeText(getBaseContext(), "wallet updated successfully!",
-                    Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getBaseContext(), "wallet updated successfully!",
+//                    Toast.LENGTH_SHORT).show();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -231,6 +237,7 @@ public class MainActivity extends AppCompatActivity {
         if (name.equals("Host")) {
             if (checkBluetoothCompatibility()) {
                 requestEnableBluetooth();
+
             } else {
                 return;
             }
@@ -293,6 +300,7 @@ public class MainActivity extends AppCompatActivity {
                 tempToast("permission granted for finding devices", 1);
                 startDiscoveryOfDevices();
             } else {
+                startDiscoveryOfDevices();
                 tempToast("Permission denied for finding devices", 1);
             }
         }
@@ -825,22 +833,43 @@ public class MainActivity extends AppCompatActivity {
                 // read data
                 bytes = (byte[]) msg.obj;
                 message = new String(bytes, 0, msg.arg1);
-
                 try{
-                if(isNumber(message) == true){
-                    SharedPreferences pref = getSharedPreferences("MyPref", 0); // 0 - for private mode
-                    String amount = pref.getString("amount","");
-                    int cb = Integer.parseInt(amount);
-                    cb = cb + Integer.parseInt(message);
-                    WriteBtn(String.valueOf(cb));
-                    Toast.makeText(getBaseContext(), "payment recieved",
-                            Toast.LENGTH_SHORT).show();
-                }}
+                    if(isNumber(message) == true){
+                        SharedPreferences pref = getSharedPreferences("MyPref", 0); // 0 - for private mode
+                        String amount = pref.getString("amount","");
+                        int cb = Integer.parseInt(amount);
+                        cb = cb + Integer.parseInt(message);
+                        WriteBtn(String.valueOf(cb));
+                        Toast.makeText(getBaseContext(), "payment recieved",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                }
                 catch (Exception e){
                     int asd=123;
                 }
+
+                if(trflag == 1){
+                    SharedPreferences pref = getSharedPreferences("MyPref", 0);
+                    String trnsc = pref.getString("transactions","");
+                    String uid_r = pref.getString("uid","");
+                    String uid_s = message;
+                    String transac_amt = prev_am;
+                    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmm").format(Calendar.getInstance().getTime());
+
+                    trnsc =(String)trnsc +   "|"+ uid_s + "-" + uid_r + "-"+ transac_amt + "-" + (String)timeStamp + "|" ;
+                    SharedPreferences.Editor editor = pref.edit();
+                    editor.putString("transactions",trnsc);
+                    editor.apply();
+
+                    trflag=0;
+                }
+
                 chatList.add(message);
                 chatPosition.add((byte) 1);
+                if(isNumber(message) == true){
+                    trflag=1;
+                    prev_am = message;
+                }
                 break;
             case MESSAGE_WRITE:
 //                // write data
@@ -893,19 +922,26 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
     // button function to send message and update wallet
-    public void sendMsgToUserBtn(View view) {
+    public void sendMsgToUserBtn(View view) throws InterruptedException {
         // write data......
         String msgTxt;
         msgTxt = enteredMsg.getText().toString();
+        Toast.makeText(getBaseContext(), msgTxt,
+                Toast.LENGTH_SHORT).show();
         try {
             if(isNumber(msgTxt) == true){
                 //MyPref holds the amount - wallet details
                 SharedPreferences pref = getSharedPreferences("MyPref", 0); // 0 - for private mode
                 String amount = pref.getString("amount","");
                 int cb = Integer.parseInt(amount); //fetch current balance
+                if(cb - Integer.parseInt(msgTxt) < 0){
+                    Toast.makeText(getBaseContext(), "insufficient balance...",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 cb = cb - Integer.parseInt(msgTxt);
                 WriteBtn(String.valueOf(cb));
-                Toast.makeText(getBaseContext(), "payment done",
+                Toast.makeText(getBaseContext(), "amount sent",
                         Toast.LENGTH_SHORT).show();
             }
 
@@ -914,6 +950,8 @@ public class MainActivity extends AppCompatActivity {
             sendMessageToUi(""+e);
             return;
         }
+
+        String pmsg = msgTxt;
 
         msgTxt = msgTxt.trim();
         if (msgTxt.equals("")) {
@@ -928,6 +966,17 @@ public class MainActivity extends AppCompatActivity {
         sendReceive.writeMessage(bytes);
         enteredMsg.setText(""); // clearing the message
         chatPosition.add((byte) 2);
+
+        if(isNumber(pmsg) == true){
+            SharedPreferences pref = getSharedPreferences("MyPref", 0); // 0 - for private mode
+            Thread.sleep(3000);
+            pmsg = pref.getString("uid","");
+            chatList.add(pmsg);
+            byte[] bytess = pmsg.getBytes();
+            sendReceive.writeMessage(bytess);
+            enteredMsg.setText(""); // clearing the message
+            chatPosition.add((byte) 2);
+        }
 
     }
 
@@ -979,7 +1028,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public void run() {
-            buffer = new byte[1024];
+            buffer = new byte[4096];
             int numOfBytes;
 
             while (true) {

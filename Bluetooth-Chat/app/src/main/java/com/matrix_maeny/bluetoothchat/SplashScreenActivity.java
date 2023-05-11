@@ -14,6 +14,8 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Objects;
 
 @SuppressLint("CustomSplashScreen")
@@ -33,9 +35,16 @@ public class SplashScreenActivity extends AppCompatActivity {
                 try{
                     SharedPreferences pref = getSharedPreferences("MyPref", 0); // 0 - for private mode
                     String amount = pref.getString("amount","");
+                    String uid = pref.getString("uid","");
                     if(amount == "" || amount == null){
                         SharedPreferences.Editor editor = pref.edit();
-                        editor.putString("amount","0000");
+                        editor.putString("amount","500");
+                        editor.apply();
+                    }
+                    if(uid == "" || uid == null){
+                        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
+                        SharedPreferences.Editor editor = pref.edit();
+                        editor.putString("uid",(String)timeStamp);
                         editor.apply();
                     }
                     sleep(2500);
