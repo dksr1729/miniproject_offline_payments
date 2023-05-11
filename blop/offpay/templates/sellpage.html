@@ -1,0 +1,27 @@
+<html>
+   <body bgcolor="red">
+      <center>
+         <br/>
+         <input id="fname" type="text" placeholder="enter your name"/>
+         <br/>
+         <br/>
+         <input id="pswd" type="text" placeholder=" password"/>
+         <br/>
+         <br/>
+         <button onclick="msg();">onclick</button>
+      </center>
+   </body>
+   <script>
+      function msg(){
+       
+          var fname=document.getElementById("fname").value;
+          var pswd=document.getElementById("pswd").value;
+       
+          // Dialog is javascript interface name
+          // mentioned in Mainactivity.Java
+          Dialog.showMsg(fname,pswd);
+          }
+       
+       
+   </script>
+</html>

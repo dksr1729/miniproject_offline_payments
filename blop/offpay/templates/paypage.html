@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>login page</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+            body {
+                background-color: black;
+            }
+            h1{
+                color: black;
+                justify-content: center;
+                margin:4px;
+            }
+            p{
+                color: red;
+            }
+            #paypage{
+                margin:20px;
+                border:3px solid white;
+                border-radius:25px;
+                background:white;
+            }
+        </style>
+    </head>
+    <body>
+        <br>
+        <br>
+        <br>
+        <center ><div id="paypage"><h1>BUY TOKENS</h1></div>
+            <input id = "amountadder"> </input><br><br>
+            <button  onclick="addamount();"><h1>Add Amount</h1></button><br>
+        <br>
+            <form><script src="https://checkout.razorpay.com/v1/payment-button.js" data-payment_button_id="pl_LYCmOePhE7dJgQ" async> </script> </form>
+        </center>
+        <script>
+            function addamount(){
+                var amountadding = document.getElementById('amountadder').value;
+                Dialog.addtowallet(amountadding);
+            }
+        </script>
+    </body>
+</html>
